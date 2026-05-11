@@ -1,37 +1,54 @@
 version: '3.8'
 
 services:
-  db:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: WordPress
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    networks:
-      - wp-network
-
-  wordpress:
-    image: wordpress:latest
-    volumes:
-      - wordpress_data:/var/www/html
-    restart: always
+  nginx:
+    image: nginx:alpine
+    container_name: islamic-qa-nginx
+    restart: unless-stopped
     ports:
-      - 8000:80
-    environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: user
-      WORDPRESS_DB_PASSWORD: password
-      WORDPRESS_DB_NAME: WordPress
-    networks:
-      - wp-network
+      - 8080:80
+      - 8443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certs:/etc/nginx/certs.d/ssl
+      networks:
+      - islamic-qa-network
+      app:
+       
+        build: 
+          context: .
+          dockerfile: Dockerfile
+          container_name: islamic-qa-app
+        restart: unless-stopped
+      volumes:
+        - .:/var/www/html:cached
+        - ./.docker/php/php-fmp.ini:/usr/local/etc/php/conf.d/90-php.ini
 
-networks:
-  wp-network:
+#       MYSQL_USER: user
+#       MYSQL_PASSWORD: password
+#     networks:
+#       - wp-network
 
-volumes:
-  wordpress_data:
+#   wordpress:
+#     image: wordpress:latest
+#     volumes:
+#       - wordpress_data:/var/www/html
+#     restart: always
+#     ports:
+#       - 8000:80
+#     environment:
+#       WORDPRESS_DB_HOST: db:3306
+#       WORDPRESS_DB_USER: user
+#       WORDPRESS_DB_PASSWORD: password
+#       WORDPRESS_DB_NAME: WordPress
+#     networks:
+#       - wp-network
+
+# networks:
+#   wp-network:
+
+# volumes:
+#   wordpress_data:
 
 
   
