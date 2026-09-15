@@ -23,8 +23,9 @@ services:
       volumes:
         - .:/var/www/html:cached
         - ./.docker/php/php-fmp.ini:/usr/local/etc/php/conf.d/90-php.ini
+        -
 
-#       MYSQL_USER: user
+#        MYSQL_USER: user       
 #       MYSQL_PASSWORD: password
 #     networks:
 #       - wp-network
