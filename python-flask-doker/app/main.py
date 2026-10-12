@@ -1,10 +1,160 @@
-from flask import Flask
+
+from flask import Flask, request, jsonify
+
 app = Flask(__name__)
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+
+products = [
+    {"id": 1, "name": "Laptop", "price": 75000, "stock": 5},
+    {"id": 2, "name": "Mouse", "price": 1200, "stock": 20},
+    {"id": 3, "name": "Keyboard", "price": 2500, "stock": 10},
+]
 
 
-    
+@app.route("/")
+def home():
+    return jsonify({
+        "message": "Product Management API",
+        "endpoints": [
+            "GET /products",
+            "GET /products/<id>",
+            "POST /products",
+            "PUT /products/<id>",
+            "DELETE /products/<id>"
+        ]
+    })
+
+
+# Get all products + search
+@app.route("/products", methods=["GET"])
+def get_products():
+    search = request.args.get("search", "").lower()
+
+    result = [
+        product for product in products
+        if search in product["name"].lower()
+    ]
+
+    return jsonify({
+        "success": True,
+        "total": len(result),
+        "data": result
+    })
+
+
+# Get a single product
+@app.route("/products/<int:product_id>", methods=["GET"])
+def get_product(product_id):
+    product = next(
+        (p for p in products if p["id"] == product_id),
+        None
+    )
+
+    if product is None:
+        return jsonify({"error": "Product not found"}), 404
+
+    return jsonify(product)
+
+
+# Create product
+@app.route("/products", methods=["POST"])
+def create_product():
+    data = request.get_json(silent=True) or {}
+
+    name = data.get("name")
+    price = data.get("price")
+    stock = data.get("stock", 0)
+
+    if not isinstance(name, str) or not name.strip():
+        return jsonify({"error": "Valid name is required"}), 400
+
+    if (
+        isinstance(price, bool)
+        or not isinstance(price, (int, float))
+        or price <= 0
+    ):
+        return jsonify({"error": "Price must be positive"}), 400
+
+    if (
+        isinstance(stock, bool)
+        or not isinstance(stock, int)
+        or stock < 0
+    ):
+        return jsonify({"error": "Stock must be a non-negative integer"}), 400
+
+    new_id = max((p["id"] for p in products), default=0) + 1
+
+    product = {
+        "id": new_id,
+        "name": name.strip(),
+        "price": price,
+        "stock": stock
+    }
+
+    products.append(product)
+
+    return jsonify({
+        "message": "Product created successfully",
+        "data": product
+    }), 201
+
+
+# Update product
+@app.route("/products/<int:product_id>", methods=["PUT"])
+def update_product(product_id):
+    data = request.get_json(silent=True) or {}
+
+    product = next(
+        (p for p in products if p["id"] == product_id),
+        None
+    )
+
+    if product is None:
+        return jsonify({"error": "Product not found"}), 404
+
+    if "name" in data:
+        if not isinstance(data["name"], str) or not data["name"].strip():
+            return jsonify({"error": "Invalid name"}), 400
+        product["name"] = data["name"].strip()
+
+    if "price" in data:
+        price = data["price"]
+        if (
+            isinstance(price, bool)
+            or not isinstance(price, (int, float))
+            or price <= 0
+        ):
+            return jsonify({"error": "Invalid price"}), 400
+        product["price"] = price
+
+    if "stock" in data:
+        stock = data["stock"]
+        if isinstance(stock, bool) or not isinstance(stock, int) or stock < 0:
+            return jsonify({"error": "Invalid stock"}), 400
+        product["stock"] = stock
+
+    return jsonify({
+        "message": "Product updated successfully",
+        "data": product
+    })
+
+
+# Delete product
+@app.route("/products/<int:product_id>", methods=["DELETE"])
+def delete_product(product_id):
+    product = next(
+        (p for p in products if p["id"] == product_id),
+        None
+    )
+
+    if product is None:
+        return jsonify({"error": "Product not found"}), 404
+
+    products.remove(product)
+
+    return jsonify({
+        "message": "Product deleted successfully"
+    })
+
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
