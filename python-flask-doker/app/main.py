@@ -158,3 +158,35 @@ def delete_product(product_id):
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
+
+
+    
+        from collections import OrderedDict
+from threading import RLock
+from typing import Generic, TypeVar
+
+K = TypeVar("K")
+V = TypeVar("V")
+
+
+class LRUCache(Generic[K, V]):
+    def __init__(self, capacity: int):
+        if capacity <= 0:
+            raise ValueError("Capacity must be positive")
+
+        self.capacity = capacity
+        self.cache: OrderedDict[K, V] = OrderedDict()
+        self.lock = RLock()
+
+    def get(self, key: K) -> V | None:
+        # TODO: Return the value and mark it recently used
+        raise NotImplementedError
+
+    def put(self, key: K, value: V) -> None:
+        # TODO: Insert/update and evict the least recently used item
+        raise NotImplementedError
+
+    def __len__(self) -> int:
+        with self.lock:
+            return len(self.cache)
