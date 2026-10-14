@@ -190,3 +190,36 @@ class LRUCache(Generic[K, V]):
     def __len__(self) -> int:
         with self.lock:
             return len(self.cache)
+
+
+
+
+            import json
+from pathlib import Path
+from threading import RLock
+from typing import Any
+
+
+class PersistentStore:
+    def __init__(self, file_path: str):
+        self.path = Path(file_path)
+        self.lock = RLock()
+        self.data: dict[str, Any] = {}
+
+        # TODO: Load existing data from disk.
+
+    def set(self, key: str, value: Any) -> None:
+        # TODO: Update data and persist safely.
+        raise NotImplementedError
+
+    def get(self, key: str, default=None):
+        # TODO: Return stored value.
+        raise NotImplementedError
+
+    def delete(self, key: str) -> bool:
+        # TODO: Delete key and persist.
+        raise NotImplementedError
+
+    def transaction(self, updates: dict[str, Any]) -> None:
+        # TODO: Apply multiple updates atomically.
+        raise NotImplementedError
