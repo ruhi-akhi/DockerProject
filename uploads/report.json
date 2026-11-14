@@ -1,0 +1,36 @@
+{
+    "generated_at": "2026-11-12T04:44:12.181888+00:00",
+    "summary": {
+        "processed": 3,
+        "duplicates": 1,
+        "failed": 0
+    },
+    "files": [
+        {
+            "file": "file1.txt",
+            "status": "COMPLETED",
+            "size_bytes": 26,
+            "word_count": 3,
+            "sha256": "4ad16a5a71e8b6a2146dec5412f36645ea9017c4dd4ce3392338e107345b81ad"
+        },
+        {
+            "file": "file3.txt",
+            "status": "DUPLICATE",
+            "sha256": "4ad16a5a71e8b6a2146dec5412f36645ea9017c4dd4ce3392338e107345b81ad"
+        },
+        {
+            "file": "file2.txt",
+            "status": "COMPLETED",
+            "size_bytes": 17,
+            "word_count": 2,
+            "sha256": "f3f30537feda6226370462dbadeeced013fe91507ad12d4c02ab4dd7e9ccfeb7"
+        },
+        {
+            "file": "file4.txt",
+            "status": "COMPLETED",
+            "size_bytes": 22,
+            "word_count": 3,
+            "sha256": "7dd3e1fde40b675feab69baa8c2e1ad21b378be92411e378febcca27ec9851d3"
+        }
+    ]
+}
